@@ -15,6 +15,8 @@
  */
 package mines.edu.casey.weatherapp;
 
+import java.util.ArrayList;
+
 public class Ipsum {
 
     static String[] Headlines = {
@@ -26,4 +28,17 @@ public class Ipsum {
         "<yweather:forecast day=\"Fri\" date=\"18 Oct 2013\" low=\"25\" high=\"35\" text=\"Clear\" code=\"31\" />",
         "<yweather:forecast day=\"Fri\" date=\"18 Oct 2013\" low=\"31\" high=\"39\" text=\"Clear\" code=\"31\" />"
     };
+    
+    static ArrayList<String> ArticlesXml;
+
+	public static ArrayList<String> getArticlesXml() {
+		return ArticlesXml;
+	}
+
+	public static void addArticlesXml(String item) {
+		ArticlesXml.add(item);
+	}
+
+    
+    
 }

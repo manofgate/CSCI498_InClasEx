@@ -15,7 +15,10 @@
  */
 package mines.edu.casey.weatherapp;
 
-import edu.mines.rbower.internetaccessdemo.DownloadDocumentTask;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -26,8 +29,9 @@ import android.util.Log;
 import android.view.View;
 
 public class MainActivity extends FragmentActivity 
-        implements ZipCode_Fragment.OnHeadlineSelectedListener {
-
+        implements ZipCode_Fragment.OnHeadlineSelectedListener, DownloadDocumentTask.Listener {
+		String doc = "";
+		Ipsum docs = new Ipsum();
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +61,7 @@ public class MainActivity extends FragmentActivity
                     .add(R.id.fragment_container, firstFragment).commit();
         }
     }
-    public void getXML( View view )
+    public void getXML()
     {
       Log.d( "INTERNET ACCESS DEMO", "getXML()..." );
 
@@ -66,11 +70,12 @@ public class MainActivity extends FragmentActivity
       NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
       if( networkInfo != null && networkInfo.isConnected() )
       {
-        new DownloadDocumentTask( this ).execute( "http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml" );
+        new DownloadDocumentTask( this ).execute( "http://weather.yahoo.com/united-states/colorado/golden-2411762/" );
       }
       else
       {
-        this.textView.setText( "No network connection available." );
+        doc = "No network connection available.";
+        docs.addArticlesXml(doc);
       }
     }
     public void onArticleSelected(int position) {
@@ -82,13 +87,14 @@ public class MainActivity extends FragmentActivity
 
         if (articleFrag != null) {
             // If article frag is available, we're in two-pane layout...
-
+        	
+        	getXML();
             // Call a method in the ArticleFragment to update its content
             articleFrag.updateArticleView(position);
 
         } else {
             // If the frag is not available, we're in the one-pane layout and must swap frags...
-
+        	getXML();
             // Create fragment and give it an argument for the selected article
             Zip_Weather_Fragment newFragment = new Zip_Weather_Fragment();
             Bundle args = new Bundle();
@@ -105,4 +111,29 @@ public class MainActivity extends FragmentActivity
             transaction.commit();
         }
     }
+	@Override
+	public void receiveResult(Document result) {
+		// TODO Auto-generated method stub
+		doc = result.toString();
+		//String exchangeRate = "USD Exchange Rate Not Found.";
+
+	    // Tidy up the XML a bit.
+	    result.getDocumentElement().normalize();
+	    doc = result.toString();
+	    docs.addArticlesXml(doc);
+	    // Retrieve all the <Cube> nodes. (Why are they "Cube"? Why not?!)
+	    /*NodeList itemNodes = result.getElementsByTagName( "Cube" );
+
+	    for( int i = 0; i < itemNodes.getLength(); i++ )
+	    {
+	      if( ( (Element)itemNodes.item( i ) ).getAttribute( "day" ).equals( "Fri" ) )
+	      {
+	        exchangeRate = "USD Exchange Rate: " + ( (Element)itemNodes.item( i ) ).getAttribute( "high" );
+	      }
+	    }
+		
+	    doc =exchangeRate;
+	    */
+	    Log.d( "INTERNET ACCESS DEMO", doc );
+	}
 }

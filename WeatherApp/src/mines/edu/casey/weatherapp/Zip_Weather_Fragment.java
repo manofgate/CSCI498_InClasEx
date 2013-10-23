@@ -61,7 +61,7 @@ public class Zip_Weather_Fragment extends Fragment {
 
     public void updateArticleView(int position) {
         TextView article = (TextView) getActivity().findViewById(R.id.article);
-        article.setText(Ipsum.Articles[position]);
+        article.setText(Ipsum.ArticlesXml.get(position));
         mCurrentPosition = position;
     }
 
