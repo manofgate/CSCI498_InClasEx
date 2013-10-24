@@ -32,6 +32,7 @@ public class MainActivity extends FragmentActivity
         implements ZipCode_Fragment.OnHeadlineSelectedListener, DownloadDocumentTask.Listener {
 		String doc = "";
 		Ipsum docs = new Ipsum();
+		int POS = 0;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class MainActivity extends FragmentActivity
       NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
       if( networkInfo != null && networkInfo.isConnected() )
       {
-        new DownloadDocumentTask( this ).execute( "http://weather.yahoo.com/united-states/colorado/golden-2411762/" );
+        new DownloadDocumentTask( this ).execute( "http://weather.yahooapis.com/forecastrss?q=80401" );
       }
       else
       {
@@ -95,45 +96,49 @@ public class MainActivity extends FragmentActivity
         } else {
             // If the frag is not available, we're in the one-pane layout and must swap frags...
         	getXML();
+        	POS = position;
             // Create fragment and give it an argument for the selected article
-            Zip_Weather_Fragment newFragment = new Zip_Weather_Fragment();
-            Bundle args = new Bundle();
-            args.putInt(Zip_Weather_Fragment.ARG_POSITION, position);
-            newFragment.setArguments(args);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-            // Replace whatever is in the fragment_container view with this fragment,
-            // and add the transaction to the back stack so the user can navigate back
-            transaction.replace(R.id.fragment_container, newFragment);
-            transaction.addToBackStack(null);
-
-            // Commit the transaction
-            transaction.commit();
+            
         }
     }
 	@Override
 	public void receiveResult(Document result) {
 		// TODO Auto-generated method stub
 		doc = result.toString();
-		//String exchangeRate = "USD Exchange Rate Not Found.";
+		String exchangeRate = "USD Exchange Rate Not Found.";
 
 	    // Tidy up the XML a bit.
-	    result.getDocumentElement().normalize();
+	    //result.getDocumentElement().normalize();
 	    doc = result.toString();
-	    docs.addArticlesXml(doc);
+	    
 	    // Retrieve all the <Cube> nodes. (Why are they "Cube"? Why not?!)
-	    /*NodeList itemNodes = result.getElementsByTagName( "Cube" );
+	    NodeList itemNodes = result.getElementsByTagName( "yweather:forecast" );
 
 	    for( int i = 0; i < itemNodes.getLength(); i++ )
 	    {
+	    	Log.d("IN CLASS: Att: ", ((Element)itemNodes.item( i )).toString());
 	      if( ( (Element)itemNodes.item( i ) ).getAttribute( "day" ).equals( "Fri" ) )
 	      {
-	        exchangeRate = "USD Exchange Rate: " + ( (Element)itemNodes.item( i ) ).getAttribute( "high" );
+	        exchangeRate = "High: " + ( (Element)itemNodes.item( i ) ).getAttribute( "high" );
 	      }
 	    }
 		
 	    doc =exchangeRate;
-	    */
-	    Log.d( "INTERNET ACCESS DEMO", doc );
+	    docs.addArticlesXml(doc);
+	    Zip_Weather_Fragment newFragment = new Zip_Weather_Fragment();
+        Bundle args = new Bundle();
+        args.putInt(Zip_Weather_Fragment.ARG_POSITION, POS);
+        newFragment.setArguments(args);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+	    //Log.d( "INTERNET ACCESS DEMO", doc );
+	    
 	}
 }

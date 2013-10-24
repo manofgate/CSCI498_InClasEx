@@ -29,7 +29,7 @@ public class Ipsum {
         "<yweather:forecast day=\"Fri\" date=\"18 Oct 2013\" low=\"31\" high=\"39\" text=\"Clear\" code=\"31\" />"
     };
     
-    static ArrayList<String> ArticlesXml;
+    static ArrayList<String> ArticlesXml = new ArrayList<String>();
 
 	public static ArrayList<String> getArticlesXml() {
 		return ArticlesXml;
